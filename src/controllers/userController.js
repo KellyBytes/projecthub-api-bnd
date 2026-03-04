@@ -67,6 +67,7 @@ export const loginUser = async (req, res, next) => {
         username: user.username,
         role: user.role,
       },
+      token,
     });
   } catch (err) {
     next(err);

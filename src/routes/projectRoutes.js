@@ -12,9 +12,42 @@ import validate from '../middleware/validate.js';
 
 const router = express.Router();
 
-// Create new project
+/**
+ * @swagger
+ * /api/projects:
+ *   post:
+ *     summary: Create a new project
+ *     tags: [Projects]
+ *     security:
+ *       - cookieAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - team
+ *               - title
+ *               - description
+ *             properties:
+ *               team:
+ *                 type: string
+ *               title:
+ *                 type: string
+ *                 maxLength: 100
+ *               description:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Project created successfully
+ *       401:
+ *         description: Not authorized
+ *       400:
+ *         description: Validation error
+ */
 router.post(
-  '/create',
+  '/',
   protect,
   [
     body('team').notEmpty().withMessage('Team is required'),
@@ -29,10 +62,39 @@ router.post(
   createProject,
 );
 
-// Get all projects
+/**
+ * @swagger
+ * /api/projects:
+ *   get:
+ *     summary: Get all projects
+ *     tags: [Projects]
+ *     responses:
+ *       200:
+ *         description: Returns a list of projects
+ */
 router.get('/', getProjects);
 
-// Get single project
+/**
+ * @swagger
+ * /api/projects/{id}:
+ *   get:
+ *     summary: Get a single project by ID
+ *     tags: [Projects]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: MongoDB project ID
+ *     responses:
+ *       200:
+ *         description: Returns a single project
+ *       400:
+ *         description: Invalid project ID
+ *       404:
+ *         description: Project not found
+ */
 router.get(
   '/:id',
   [param('id').isMongoId().withMessage('Invalid project ID')],
@@ -40,7 +102,44 @@ router.get(
   getProject,
 );
 
-// Update project
+/**
+ * @swagger
+ * /api/projects/{id}:
+ *   patch:
+ *     summary: Update a project
+ *     tags: [Projects]
+ *     security:
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: MongoDB project ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               team:
+ *                 type: string
+ *               title:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Project updated successfully
+ *       401:
+ *         description: Not authorized
+ *       400:
+ *         description: Validation error
+ *       404:
+ *         description: Project not found
+ */
 router.patch(
   '/:id',
   protect,
@@ -54,7 +153,31 @@ router.patch(
   updateProject,
 );
 
-// Delete project
+/**
+ * @swagger
+ * /api/projects/{id}:
+ *   delete:
+ *     summary: Delete a project (Admin only)
+ *     tags: [Projects]
+ *     security:
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: MongoDB project ID
+ *     responses:
+ *       200:
+ *         description: Project deleted successfully
+ *       401:
+ *         description: Not authorized
+ *       403:
+ *         description: Admin only
+ *       404:
+ *         description: Project not found
+ */
 router.delete(
   '/:id',
   protect,

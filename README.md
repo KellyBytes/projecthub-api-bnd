@@ -1,7 +1,16 @@
 # ProjectHub API
 
-**ProjectHub API** is a simple RESTful API for managing team projects.
-It provides user authentication and full CRUD operations for projects.
+**ProjectHub API** is a RESTful API for managing team projects with user authentication and full CRUD operations.  
+It demonstrates scalable backend structure, separation of concerns using controllers, middleware, and models, and secure authentication flows.
+<br />
+
+## 🌐 Live API
+
+After deploying to Render, access the API at:  
+`https://your-projecthub-api.onrender.com`
+
+Swagger (interactive API docs):  
+`https://your-projecthub-api.onrender.com/api-docs`
 <br />
 
 ## Table of Contents
@@ -12,31 +21,37 @@ It provides user authentication and full CRUD operations for projects.
 - File Structure
 - Environment Variables
 - API Endpoints
+- Auth & Access Control
 - Error Handling
-- Usage Examples
+- Sample Requests
+- Testing
 - Contributing
 - License
 <br />
 
 ## 💡 Features
 
-- User registration, login, and logout
+- User registration, login, logout
 - JWT-based authentication for protected routes
-- Create, read, update, and delete projects
+- Role-based access control (admin vs member)
+- Full CRUD operations for projects
 - Middleware for logging, validation, and error handling
+- API documentation via Swagger
+- Automated testing with Jest + Supertest
 <br />
 
 ## 🛠 Tech Stack
 
-- Node.js
-- Express.js
+- Node.js / Express.js
 - MongoDB / Mongoose
 - JSON Web Tokens (JWT)
 - bcryptjs for password hashing
 - express-validator for request validation
+- Swagger (OpenAPI)
+- Jest + Supertest
 <br />
 
-## ⚡ Installation
+## ⚡ Installation (Local Dev)
 ```bash
 # Clone the repository
 git clone https://github.com/yourusername/projecthub-api.git
@@ -91,24 +106,38 @@ JWT_SECRET=your_jwt_secret
 <br />
 
 ## 📌 API Endpoints
-
+[Link to Swagger](https://your-projecthub-api.onrender.com/api-docs) 
 ### Users
 | Method |	Path | Description |
 |:---|:---|:---|
 | POST | `/api/users/register` | Register a new user |
 | POST | `/api/users/login` | Login |
-| POST | `/api/users/logout` | Logout |
+
 
 ### Projects
-| Method | Path | Description | Auth Required
+| Method | Path | Description | Auth Required |
 |:---|:---|:---|:---|
-| GET | `/api/projects` | Get all projects |  |
-| GET | `/api/projects/:id` | Get project by ID |  |
+| GET | `/api/projects` | Get all projects | ❌ |
+| GET | `/api/projects/:id` | Get project by ID | ❌ |
 | POST | `/api/projects` | Create a new project | ✅ |
-| PUT | `/api/projects/:id` | Update a project | ✅ |
+| PATCH | `/api/projects/:id` | Update a project | ✅ |
 | DELETE | `/api/projects/:id` | Delete a project | ✅ |
 
-Note: Protected routes require JWT token in the `Authorization` header.
+> Protected routes require JWT in `Authorization` header.
+
+<br />
+
+## 🔐 Auth & Access Control
+
+- JWT issued at login
+- Protected routes validated via pr`otect middleware
+- `adminOnly` middleware restricts admin actions
+
+### Access rules:
+
+- **View projects (GET)** → Public
+- **Create / Update projects** → Authenticated users
+- **Delete projects** → Admin only
 <br />
 
 ## ⚠ Error Handling
@@ -118,14 +147,13 @@ Note: Protected routes require JWT token in the `Authorization` header.
 - Validation errors return detailed messages
 <br />
 
-## 📝 Usage Examples
+## 📝 Sample Requests
 
-### 1. Register a User
+### 1. Register User
 
-- Method: POST
-- URL: `http://localhost:5000/api/users/register`
-- Body: JSON
-```
+`POST https://your-projecthub-api.onrender.com/api/users/register`
+
+```json
 {
   "username": "john",
   "email": "john@example.com",
@@ -133,63 +161,73 @@ Note: Protected routes require JWT token in the `Authorization` header.
   "role": "member"
 }
 ```
-<br />
 
 ### 2. Login
 
-- Method: POST
-- URL: `http://localhost:5000/api/users/login`
-- Body: JSON
-```
+`POST https://your-projecthub-api.onrender.com/api/users/login`
+
+```json
 {
   "email": "john@example.com",
   "password": "password123"
 }
 ```
-Response contains a JWT token.
-<br />
+### Response:
 
-### 3. Create a Project (Protected)
-
-- Method: POST
-- URL: `http://localhost:5000/api/projects/create`
-- Headers: Authorization: Bearer YOUR_JWT_TOKEN
-- Body: JSON
+```json
+{
+  "message": "User logged in",
+  "token": "JWT_TOKEN_HERE",
+  "user": {
+    "id": "USER_ID",
+    "username": "john",
+    "email": "john@example.com",
+    "role": "member"
+  }
+}
 ```
+
+### 3. Create Project (Protected)
+
+`POST https://your-projecthub-api.onrender.com/api/projects`
+
+```http
+Authorization: Bearer JWT_TOKEN_HERE
+```
+```json
 {
   "title": "Project 1",
   "description": "First project",
   "team": "Team A"
 }
 ```
-<br />
 
 ### 4. Get All Projects
 
-- Method: GET
-- URL: `http://localhost:5000/api/projects/`
+`GET https://your-projecthub-api.onrender.com/api/projects`
 <br />
 
-### 5. Update a Project
+## 🧪 Testing
 
-- Method: PATCH
-- URL: `http://localhost:5000/api/projects/:id`
-- Headers: Authorization: Bearer YOUR_JWT_TOKEN
-- Body: JSON
+Run all tests locally:
+```bash
+npm test
 ```
-{
-  "title": "Project 1",
-  "description": "First project updated",
-  "team": "Team A"
-}
+
+### Sample output:
+
 ```
-<br />
+PASS  tests/userLoginJWT.test.js
+PASS  tests/project.test.js
+Tests: 8 passed, 0 failed
+```
+> Demonstrates user auth, JWT handling, and project CRUD.
 
 ## 🤝 Contributing
 
-1. Fork the repository
+1. Fork repository
 2. Create a branch (`git checkout -b feature/your-feature`)
-3. Make your changes
+3. Make changes
 4. Open a Pull Request
 <br />
 

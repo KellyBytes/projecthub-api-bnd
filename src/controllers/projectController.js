@@ -1,6 +1,6 @@
 import Project from '../models/projectModel.js';
 
-// Create new project | POST /api/projects/create
+// Create new project | POST /api/projects
 export const createProject = async (req, res, next) => {
   try {
     const { team, title, description } = req.body;
