@@ -6,6 +6,7 @@ import {
   registerUser,
 } from '../controllers/userController.js';
 import validate from '../middleware/validate.js';
+import { authLimiter } from '../middleware/rateLimiter.js';
 
 const router = express.Router();
 
@@ -112,6 +113,7 @@ router.post(
       .withMessage('Password must contain at least one number'),
   ],
   validate,
+  authLimiter,
   loginUser,
 );
 

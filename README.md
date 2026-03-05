@@ -6,27 +6,29 @@ It demonstrates scalable backend structure, separation of concerns using control
 
 ## 🌐 Live API
 
-After deploying to Render, access the API at:  
-`https://your-projecthub-api.onrender.com`
+Base URL  
+https://projecthub-api-bnd.onrender.com
 
-Swagger (interactive API docs):  
-`https://your-projecthub-api.onrender.com/api-docs`
+Swagger Documentation 
+https://projecthub-api-bnd.onrender.com/api-docs
 <br />
 
 ## Table of Contents
 
-- Features
-- Tech Stack
-- Installation
-- File Structure
-- Environment Variables
-- API Endpoints
-- Auth & Access Control
-- Error Handling
-- Sample Requests
-- Testing
-- Contributing
-- License
+- [Features](#-features)
+- [Tech Stack](#-tech-stack)
+- [Architecture](#-architecture)
+- [Installation](#-installation-local-dev)
+- [File Structure](#-file-structure)
+- [Environment Variables](#-environment-variables)
+- [API Endpoints](#-api-endpoints)
+- [Auth & Access Control](#-auth--access-control)
+- [Security Features](#-security-features)
+- [Error Handling](#-error-handling)
+- [Sample Requests](#-sample-requests)
+- [Testing](#-testing)
+- [Contributing](#-contributing)
+- [License](#-license)
 <br />
 
 ## 💡 Features
@@ -42,19 +44,37 @@ Swagger (interactive API docs):
 
 ## 🛠 Tech Stack
 
-- Node.js / Express.js
+- Node.js
+- Express.js
 - MongoDB / Mongoose
 - JSON Web Tokens (JWT)
-- bcryptjs for password hashing
-- express-validator for request validation
+- bcryptjs
+- express-validator
 - Swagger (OpenAPI)
 - Jest + Supertest
+<br />
+
+## 🏗 Architecture
+
+The API follows a layered architecture to maintain separation of concerns.
+
+Client
+↓
+Routes (Express Router)
+↓
+Controllers (Business Logic)
+↓
+Models (Mongoose)
+↓
+MongoDB
+
+Middleware is used for authentication, validation, logging, and error handling.
 <br />
 
 ## ⚡ Installation (Local Dev)
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/projecthub-api.git
+git clone https://github.com/KellyBytes/projecthub-api.git
 cd projecthub-api
 
 # Install dependencies
@@ -106,7 +126,10 @@ JWT_SECRET=your_jwt_secret
 <br />
 
 ## 📌 API Endpoints
-[Link to Swagger](https://your-projecthub-api.onrender.com/api-docs) 
+
+Full interactive documentation is available via Swagger:
+https://projecthub-api-bnd.onrender.com/api-docs
+
 ### Users
 | Method |	Path | Description |
 |:---|:---|:---|
@@ -130,7 +153,7 @@ JWT_SECRET=your_jwt_secret
 ## 🔐 Auth & Access Control
 
 - JWT issued at login
-- Protected routes validated via pr`otect middleware
+- Protected routes validated via `protect` middleware
 - `adminOnly` middleware restricts admin actions
 
 ### Access rules:
@@ -138,6 +161,42 @@ JWT_SECRET=your_jwt_secret
 - **View projects (GET)** → Public
 - **Create / Update projects** → Authenticated users
 - **Delete projects** → Admin only
+<br />
+
+## 🔒 Security Features
+
+This API implements several security best practices to protect user data and prevent abuse.
+
+### Authentication Security
+
+- Passwords hashed using **bcrypt**
+- **JWT-based authentication** for protected routes
+- Tokens stored in **HTTP-only cookies** to prevent XSS access
+- Secure cookies enabled in production (`secure: true`)
+
+### Authorization
+
+- **Role-based access control (RBAC)**
+- Admin-only routes protected via middleware
+
+### Rate Limiting
+
+- **express-rate-limit** used to prevent abuse and brute force attacks
+- Limits API requests per IP within a defined time window
+
+Example:
+
+100 requests per 5 minutes per IP.  
+If the limit is exceeded, the API returns:
+
+```bash
+429 Too Many Requests
+```
+
+### Input Validation
+
+- Request validation via **express-validator**
+- Prevents malformed or malicious input
 <br />
 
 ## ⚠ Error Handling
@@ -151,7 +210,7 @@ JWT_SECRET=your_jwt_secret
 
 ### 1. Register User
 
-`POST https://your-projecthub-api.onrender.com/api/users/register`
+`POST https://projecthub-api-bnd.onrender.com/api/users/register`
 
 ```json
 {
@@ -164,7 +223,7 @@ JWT_SECRET=your_jwt_secret
 
 ### 2. Login
 
-`POST https://your-projecthub-api.onrender.com/api/users/login`
+`POST https://projecthub-api-bnd.onrender.com/api/users/login`
 
 ```json
 {
@@ -189,9 +248,9 @@ JWT_SECRET=your_jwt_secret
 
 ### 3. Create Project (Protected)
 
-`POST https://your-projecthub-api.onrender.com/api/projects`
+`POST https://projecthub-api-bnd.onrender.com/api/projects`
 
-```http
+```bash
 Authorization: Bearer JWT_TOKEN_HERE
 ```
 ```json
@@ -204,7 +263,7 @@ Authorization: Bearer JWT_TOKEN_HERE
 
 ### 4. Get All Projects
 
-`GET https://your-projecthub-api.onrender.com/api/projects`
+`GET https://projecthub-api-bnd.onrender.com/api/projects`
 <br />
 
 ## 🧪 Testing
@@ -234,3 +293,6 @@ Tests: 8 passed, 0 failed
 ## 📄 License
 
 MIT License
+
+---
+[Back to Top](#projecthub-api)

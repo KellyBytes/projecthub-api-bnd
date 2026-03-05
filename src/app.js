@@ -8,8 +8,14 @@ import cookieParser from 'cookie-parser';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJsdoc from 'swagger-jsdoc';
 import cors from 'cors';
+import { apiLimiter } from './middleware/rateLimiter.js';
 
 const app = express();
+
+const BASE_URL =
+  process.env.NODE_ENV === 'production'
+    ? 'https://projecthub-api-bnd.onrender.com'
+    : 'http://localhost:5000';
 
 const options = {
   definition: {
@@ -21,42 +27,46 @@ const options = {
     },
     servers: [
       {
-        url: 'http://localhost:5000',
+        url: BASE_URL,
       },
     ],
-  },
-  apis: ['./src/routes/*.js'], // Set routes files
-  components: {
-    securitySchemes: {
-      cookieAuth: {
-        type: 'apiKey',
-        in: 'cookie',
-        name: 'token',
+    components: {
+      securitySchemes: {
+        cookieAuth: {
+          type: 'apiKey',
+          in: 'cookie',
+          name: 'token',
+        },
       },
     },
   },
+  apis: ['./src/routes/*.js'], // Set routes files
 };
 
 const specs = swaggerJsdoc(options);
+
+app.set('trust proxy', 1);
 
 app.use(express.json());
 app.use(cookieParser());
 
 app.use(
   cors({
-    origin: 'http://localhost:5000',
+    origin: [
+      'http://localhost:5000',
+      'https://projecthub-api-bnd.onrender.com',
+    ],
     credentials: true,
   }),
 );
 
 app.use(logger);
+app.use(apiLimiter);
 
 app.use('/api/users', userRoutes);
 app.use('/api/projects', projectRoutes);
 
-if (process.env.NODE_ENV !== 'production') {
-  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
-}
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 
 app.use(notFound);
 app.use(errorHandler);

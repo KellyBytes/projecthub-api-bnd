@@ -53,8 +53,7 @@ export const loginUser = async (req, res, next) => {
     // Save to Cookie
     res.cookie('token', token, {
       httpOnly: true,
-      // secure: process.env.NODE_ENV === 'production',
-      secure: false, // development
+      secure: process.env.NODE_ENV === 'production',
       sameSite: 'Lax',
       maxAge: 1 * 60 * 60 * 1000,
     });
