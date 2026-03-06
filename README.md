@@ -58,15 +58,7 @@ https://projecthub-api-bnd.onrender.com/api-docs
 
 The API follows a layered architecture to maintain separation of concerns.
 
-Client
-↓
-Routes (Express Router)
-↓
-Controllers (Business Logic)
-↓
-Models (Mongoose)
-↓
-MongoDB
+Client → Routes (Express Router) → Controllers (Business Logic) → Models (Mongoose) → MongoDB
 
 Middleware is used for authentication, validation, logging, and error handling.
 <br />
